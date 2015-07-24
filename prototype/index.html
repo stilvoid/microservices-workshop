@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Babble</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+        <style>
+            #main-container {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Babble</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container" id="login-container">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+                    <form class="form" id="login-form">
+                        <div class="form-group">
+                            <label for="login-name">Your name</label>
+                            <input class="form-control" id="login-name" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="main-container">
+            <div class="panel panel-primary">
+                <div class="panel-heading panel-title">
+                    <span id="room-name">Babble: Choose a room</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading panel-title">
+                                    Rooms
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="list-group" id="rooms"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <table class="table" id="chat">
+                                    </table>
+
+                                    <form class="form" id="chat-form">
+                                        <input class="form-control" type="text" id="message" placeholder="New message" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading panel-title">
+                                    Members
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="list-group" id="members"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script>
+        // Some quotes
+        var quotes = [
+            "Mange tout, Rodney. Mange tout.",
+            "The answer to life, the universe, and everything is... 42.",
+            "I've never seen one before, no one has, but I'm guessing it's a white hole.",
+            "You are the new number six.",
+            "Frankly my dear, I don't give a damn.",
+            "Your scientists were so preoccupied with whether or not they could that they didn't stop to think if they should.",
+            "Do or do not. There is no try.",
+            "The spoon does not exist."
+        ];
+
+        // Some demo data
+        var rooms = [
+            {
+                "name": "General",
+                "title": "Random talk and cat pictures",
+                "users": [19,0,2,4,6,8,10]
+            },
+            {
+                "name": "Doctors",
+                "title": "Reminiscing over past faces",
+                "users": [19,0,1,2,3,4,5,6,7,8,9,10,11]
+            },
+            {
+                "name": "Companions",
+                "title": "Things we've seen. Things we've done.",
+                "users": [19,12,13,14,15,16,17,18]
+            }
+        ];
+
+        var users = [
+            "William",
+            "Patrick",
+            "Jon",
+            "Tom",
+            "Peter",
+            "Colin",
+            "Sylvester",
+            "Paul",
+            "Christopher",
+            "David",
+            "Matt",
+            "Peter",
+            "Elisabeth",
+            "Louise",
+            "Sophie",
+            "Billie",
+            "Alex",
+            "Karen",
+            "Jenna",
+            "QuoteBot"
+        ];
+
+        var messages = [
+            {
+                "user": 0,
+                "room": 0,
+                "text": "Hello there, how's it going?"
+            },
+            {
+                "user": 12,
+                "room": 0,
+                "text": "Hi William. Not bad thanks."
+            },
+            {
+                "user": 0,
+                "room": 0,
+                "text": "I can feel a change coming on."
+            },
+            {
+                "user": 1,
+                "room": 0,
+                "text": "Oh, this is different."
+            },
+            {
+                "user": 10,
+                "room": 0,
+                "text": "It's me!<br/><img src=\"http://media.catmoji.com/post/vro4/doctor-who-cat.jpg\" />"
+            },
+            {
+                "user": 17,
+                "room": 0,
+                "text": "<em>groan</em>"
+            }
+        ];
+
+        for(var i=0; i<12; i++) {
+            messages.push({
+                "user": i,
+                "room": 1,
+                "text": i % 2 == 0 ? "To you." : "To me."
+            });
+        }
+
+        messages.push({
+            "user": 18,
+            "room": 2,
+            "text": "I wonder what the new guy will be like."
+        });
+
+        // Handle form submission
+        $("#chat-form").submit(function() {
+            post_message($("#message").val());
+
+            $("#message").val("");
+
+            return false;
+        });
+
+        function choose_room(room_id) {
+            var room = rooms[room_id];
+
+            $("#members").html("");
+            $("#chat").html("");
+
+            $("#room-name").text(room.name + ": " + room.title);
+
+            get_members(room_id);
+            get_messages(room_id);
+        }
+
+        function get_rooms() {
+            rooms.forEach(function(room, id) {
+                var link = $("<a>").addClass("list-group-item").text(room.name);
+                link.append($("<span>").addClass("badge").text(room.users.length));
+                $("#rooms").append(link);
+                link.click(function() {
+                    current_room = id;
+
+                    $("#rooms a").removeClass("active");
+                    link.addClass("active");
+                    choose_room(id);
+                    return false;
+                });
+            });
+        }
+
+        function get_messages(room_id) {
+            messages.filter(function(message) {
+                return message.room == room_id;
+            }).forEach(function(message) {
+                add_message(message);
+            });
+        }
+
+        function add_message(message) {
+            $("#chat").append(
+                $("<tr>").append(
+                    $("<th>").text(users[message.user]),
+                    $("<td>").html(message.text)
+                )
+            );
+
+            if(message.text == "!quote") {
+                var quote_message = {
+                    user: 19,
+                    room: message.room,
+                    text: quotes[Math.floor(Math.random() * quotes.length)]
+                }
+
+                add_message(quote_message);
+            }
+        }
+
+        function get_members(room_id) {
+            rooms[room_id].users.forEach(function(user_id) {
+                var link = $("<span>").addClass("list-group-item").text(users[user_id]);
+                $("#members").append(link);
+            });
+        }
+
+        function post_message(text) {
+            var message = {
+                room: current_room,
+                user: current_user,
+                text: $("#message").val()
+            };
+
+            messages.push(message);
+            add_message(message);
+        }
+
+        var current_user = 0;
+        var current_room = 0;
+
+        get_rooms();
+        $("#rooms a:first-child").click();
+
+        $("#login-form").submit(function() {
+            var name=$("#login-name").val();
+
+            users.push(name);
+
+            current_user = users.length - 1;
+
+            $("#login-container").hide();
+            $("#main-container").show();
+
+            return false;
+        });
+    </script>
+</html>
