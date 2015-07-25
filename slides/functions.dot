@@ -1,0 +1,21 @@
+graph {
+    node [shape=rect style=filled fillcolor="#99ccdd"]
+    user [label="User Interface"]
+    bot [label="Quote bot"]
+
+    node [shape=ellipse style=unfilled]
+
+    user -- {
+        send_message
+        receive_messages
+        register_user
+        list_users
+        list_rooms
+    }
+
+    bot -- {
+        send_message
+        receive_messages
+        get_random_quote
+    }
+}

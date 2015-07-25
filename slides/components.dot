@@ -1,0 +1,19 @@
+graph {
+    rankdir=LR
+
+    node [shape=Mrecord style=filled fillcolor="#99ccdd"]
+    
+    edge [dir=both]
+
+    {
+        rank=same
+        "Room DB" -- "Room service"
+    }
+
+    {
+        rank=same
+        "Message DB" -- "Message service"
+    }
+
+    "Room service" -- UI -- "Message service" -- Bot -- "Quote service"
+}
