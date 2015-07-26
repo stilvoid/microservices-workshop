@@ -454,10 +454,119 @@ Visit <http://<your EC2 IP>> to see if it worked.
 
 ---
 
-# Exercise two - the services
+# And now... an interlude
 
 ---
 
 # Introducing Bottle
 
 Bottle is a python web micro-framework.
+
+Here's a "hello world" web service:
+
+    !python
+    from bottle import get, run
+
+    @get("/")                    # This enables GET requests at the path `/`
+    def index():                 # A very simple function
+        return "Hello, world!"   # The return value becomes the response
+
+    run(host="0.0.0.0", port=8000)
+
+Content type is determined from the return value.
+
+This returns `application/json` content:
+
+    !python
+    @get("/goodbye")
+    def goodbye():
+        return {
+            "good": "bye"
+        }
+
+---
+
+# Working with MongoDB
+
+## A simple collection API
+
+    !python
+    @get("/cakes")
+    def get_all_cakes(mongodb):
+        return mongodb["cakes"].find()
+
+## API for a single item
+
+    !python
+    @get("/cakes/<cake_id>")
+    def get_cake(mongodb, cake_id):
+        return mongodb["cakes"].find({
+            "_id": cake_id,
+        })
+
+## Creating a new item
+
+    !python
+    @post("/cakes")
+    def create_cakes(mongodb):
+        mongodb["cakes"].insert(request.json)
+
+        return Response(status=201)
+
+---
+
+# Exercise two - the services
+
+---
+
+# Coding the services
+
+## Separate into 4 teams.
+
+Each team pick a service:
+
+* Room service (larger team, more to do)
+* Message service
+* Quote service
+
+## Write some code
+
+Use docker-compose to run your service and try it out in the browser.
+
+# Presenter notes
+
+If there's time, everyone can do each service
+
+Making sure there's at least one of each
+
+Unit tests out of scope - not a python session
+
+---
+
+# Specification
+
+## Data formats
+
+    User:    {"id": "user id", "name": "user name"}
+    Room:    {"id": "room id", "name": "room name", "title": "room title",
+              "members": [array of user ids]}
+    Message: {"id": "message id", "user": "user id", "room": "room id"}
+
+## Room service APIs
+
+    GET  /rooms - Array of rooms.       | GET  /users - Array of users.
+    POST /rooms - Room data in request. | POST /users - User data in request.
+                  Returns new room.     |               Returns new user.
+    GET  /
+
+## Message service APIs
+
+    GET  /messages - Array of messages.
+                     `room` in query string to filter messages by room.
+
+    POST /messages - Message data in request.
+                     Returns new message.
+
+## Quote service APIs
+
+    GET / - Returns a random quote.
