@@ -310,6 +310,11 @@ section, .slide header:only-child h1 {
 
 img { display: block; margin: auto; max-width: 100%; max-height: 100%; }
 
+.qr {
+    margin: -20px;
+    padding: 0;
+}
+
 section img.align-center {
   display: block;
   margin-left: auto;
@@ -371,11 +376,17 @@ blockquote {
 }
 
 li {
-  padding: 10px 0;
+  padding: 0 0 10px 0;
   font-size: 20px;
 }
 
-li pre { margin-left: 0em; }
+li p, li pre {
+    margin: 0 0 10px 0;
+}
+
+li p:last-child, li pre:last-child {
+    margin: 0;
+}
 
 .slide header:only-child h1 {
   line-height: 180%;

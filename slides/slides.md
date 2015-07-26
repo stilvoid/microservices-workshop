@@ -22,9 +22,11 @@
 
 Steve Engledow - Head of software delivery for cloud at [Proxama](http://proxama.com)
 
-![It's'a me](http://offend.me.uk/media/images/me.png)
+![It's'a me](http://offend.me.uk/media/images/me-large.png)
 
 ## Links
+
+Proxama: <http://www.proxama.com/>
 
 Email: <steve@offend.me.uk>
 
@@ -47,8 +49,8 @@ Twitter: [@stilvoid](https://twitter.com/stilvoid)
 
 ## Part 1: Developing with `Docker`
 
-* Introducing `docker-compose`
-* Write some code; build some services
+* Writing code; building services
+* Linking services together
 
 ## Lunch
 
@@ -151,15 +153,29 @@ UNIX philosophy
 
 # How to design for micro-services
 
-1. Outline functionality
+## Outline functionality
 
-2. Map dependencies
+Know what you're aiming to build.
+ 
+Start with a prototype.
 
-3. Identifier clusters
+## Map dependencies
 
-4. Pick your balance
+[Graphviz](http://graphviz.org/) is a good tool for this.
 
-5. If in doubt, start bigger
+So is a sheet of paper ;)
+
+## Identifier clusters of functionality
+
+Draw some circles :)
+
+## Pick your balance
+
+Service size vs. infrastructure complexity
+
+# If in doubt, start bigger
+
+You can always split services apart later
 
 ---
 
@@ -203,11 +219,11 @@ UNIX philosophy
 
 ---
 
-# Brief guide to Docker
+# A brief Docker guide/refresher
 
 ---
 
-# Brief Docker guide/refresher
+# A brief Docker guide/refresher
 
 ## Pull an image from the registry
 
@@ -254,6 +270,8 @@ Build a persistent, multi-user, web-based chat service.
 With a bot!
 
 Prototype: <http://code.offend.me.uk/babble-proto>
+
+.qr: 120|http://code.offend.me.uk/babble-proto
 
 ## Check out the base project
 
@@ -312,6 +330,149 @@ A service that waits for a `!quote` messages and posts a random quote.
 ## Quote service
 
 Has a database of quotes and an API to retrieve one at random.
+
+---
+
+# Coding time!
+
+---
+
+# Introducing Bottle
+
+Bottle is a python web micro-framework.
+
+Here's a "hello world" web service:
+
+    !python
+    from bottle import get, run
+
+    @get("/")                    # This enables GET requests at the path `/`
+    def index():                 # A very simple function
+        return "Hello, world!"   # The return value becomes the response
+
+    run(host="0.0.0.0", port=8000)
+
+Content type is determined from the return value.
+
+This returns `application/json` content:
+
+    !python
+    @get("/goodbye")
+    def goodbye():
+        return {
+            "good": "bye"
+        }
+
+---
+
+# Working with MongoDB
+
+## A simple collection API
+
+    !python
+    @get("/cakes")
+    def get_all_cakes(mongodb):
+        return mongodb["cakes"].find()
+
+## API for a single item
+
+    !python
+    @get("/cakes/<cake_id>")
+    def get_cake(mongodb, cake_id):
+        return mongodb["cakes"].find({
+            "_id": cake_id,
+        })
+
+## Creating a new item
+
+    !python
+    @post("/cakes")
+    def create_cakes(mongodb):
+        mongodb["cakes"].insert(request.json)
+
+        return Response(status=201)
+
+---
+
+# Exercise One - Write an API
+
+In groups of two or three, pick an API:
+
+* Random quote
+
+    You visit `/quote`, you see a random quote.
+
+* Room collection
+
+    A list of rooms.
+
+* User collection
+
+    Get a list of users.
+
+* Create room
+
+    `POST` a new room.
+
+* Create user
+
+    `POST` a new user.
+
+* Create message
+
+    `POST` a new message.
+
+* Message collection
+
+    Get a list of messages.
+
+    Can be filtered by room.
+
+# Presenter notes
+
+These are in order of difficulty.
+
+---
+
+# Get coding!
+
+* Start in the `stub` folder.
+
+* See `README.md` for details.
+
+* You should only need to modify `server.py`
+
+* Shout if you need help.
+
+## Running your service
+
+1. Start a local mongo db (quote API doesn't need this)
+
+        docker run -d --name db mongo
+
+2. Build the stub application
+
+        docker build -t stub ./
+
+3. Run it
+
+        docker run --rm --link db:db -v $(pwd):/usr/src/app stub
+
+    or for the quote API:
+
+        docker run --rm -v $(pwd):/usr/src/app stub
+
+4. Write code, try it out, repeat
+
+    [hurl.it](https://www.hurl.it/) is OK for the job.
+
+# Presenter notes
+
+I'll wander around providing help.
+
+# Presenter notes
+
+Unit tests out of scope - not a python session
 
 ---
 
@@ -434,139 +595,38 @@ Explain about linking - hostname internally
 
 ---
 
-# Coding time!
+# Exercise two - compose your service
+
+Write a `docker-compose.yml` file for running your API from exercise one.
+
+If it needs a database, that should be included too.
+
+## Notes
+
+* Documentation is at <https://docs.docker.com/compose/yml/>.
+
+.qr: 150|https://docs.docker.com/compose/yml/
+
+* Start your service with `docker-compose up`
+
+* Kill it with `ctrl-d`
+
+* Visit <http://<your EC2 IP>> to see if it worked.
 
 ---
 
-# Exercise one - full stack
+# Exercise three - full stack
 
-The repository contains code for each service.
+The repository has stub code for each of the services.
 
 Write a `docker-compose.yml` to run them all together on a single machine.
 
 ![Components](components.png)
 
+## Notes
+
 Documentation is at <https://docs.docker.com/compose/yml/>.
 
 .qr: 150|https://docs.docker.com/compose/yml/
 
-Visit <http://<your EC2 IP>> to see if it worked.
-
----
-
-# And now... an interlude
-
----
-
-# Introducing Bottle
-
-Bottle is a python web micro-framework.
-
-Here's a "hello world" web service:
-
-    !python
-    from bottle import get, run
-
-    @get("/")                    # This enables GET requests at the path `/`
-    def index():                 # A very simple function
-        return "Hello, world!"   # The return value becomes the response
-
-    run(host="0.0.0.0", port=8000)
-
-Content type is determined from the return value.
-
-This returns `application/json` content:
-
-    !python
-    @get("/goodbye")
-    def goodbye():
-        return {
-            "good": "bye"
-        }
-
----
-
-# Working with MongoDB
-
-## A simple collection API
-
-    !python
-    @get("/cakes")
-    def get_all_cakes(mongodb):
-        return mongodb["cakes"].find()
-
-## API for a single item
-
-    !python
-    @get("/cakes/<cake_id>")
-    def get_cake(mongodb, cake_id):
-        return mongodb["cakes"].find({
-            "_id": cake_id,
-        })
-
-## Creating a new item
-
-    !python
-    @post("/cakes")
-    def create_cakes(mongodb):
-        mongodb["cakes"].insert(request.json)
-
-        return Response(status=201)
-
----
-
-# Exercise two - the services
-
----
-
-# Coding the services
-
-## Separate into 4 teams.
-
-Each team pick a service:
-
-* Room service (larger team, more to do)
-* Message service
-* Quote service
-
-## Write some code
-
-Use docker-compose to run your service and try it out in the browser.
-
-# Presenter notes
-
-If there's time, everyone can do each service
-
-Making sure there's at least one of each
-
-Unit tests out of scope - not a python session
-
----
-
-# Specification
-
-## Data formats
-
-    User:    {"id": "user id", "name": "user name"}
-    Room:    {"id": "room id", "name": "room name", "title": "room title",
-              "members": [array of user ids]}
-    Message: {"id": "message id", "user": "user id", "room": "room id"}
-
-## Room service APIs
-
-    GET  /rooms - Array of rooms.       | GET  /users - Array of users.
-    POST /rooms - Room data in request. | POST /users - User data in request.
-                  Returns new room.     |               Returns new user.
-    GET  /
-
-## Message service APIs
-
-    GET  /messages - Array of messages.
-                     `room` in query string to filter messages by room.
-
-    POST /messages - Message data in request.
-                     Returns new message.
-
-## Quote service APIs
-
-    GET / - Returns a random quote.
+* Visit <http://<your EC2 IP>> to see if it worked.
