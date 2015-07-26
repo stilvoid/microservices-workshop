@@ -629,4 +629,8 @@ Documentation is at <https://docs.docker.com/compose/yml/>.
 
 .qr: 150|https://docs.docker.com/compose/yml/
 
+* Start your stack with `docker-compose up`
+
+* Kill it with `ctrl-d`
+
 * Visit <http://<your EC2 IP>> to see if it worked.
