@@ -1,10 +1,10 @@
 # Things to do first
 
-## Get on the WiFi
+## WiFi
 
-    SSID: `<blahblah>`
+    Connect to `Kings Centre Free Wifi`.
 
-    Password: `<blahblah>`
+    Open a browser and sign up.
 
 ## Install an SSH client
 
@@ -22,7 +22,7 @@
 
 Steve Engledow - Head of software delivery for cloud at [Proxama](http://proxama.com)
 
-![It's'a me](http://offend.me.uk/media/images/me-large.png)
+![It's'a me](http://offend.me.uk/media/images/me.png)
 
 ## Links
 
@@ -94,6 +94,18 @@ Twitter: [@stilvoid](https://twitter.com/stilvoid)
 # Presenter notes
 
 UNIX philosophy
+
+---
+
+# What are micro-services?
+
+## From this
+
+![Tightly coupled](coupled.png)
+
+## To this
+
+![Loosely coupled](decoupled.png)
 
 ---
 
@@ -258,6 +270,62 @@ You can always split services apart later
 ---
 
 # Developing with Docker
+
+---
+
+# Developing with Docker
+
+Docker is great for deployments.
+
+It's great for development for the same reasons:
+
+* No need to install dependencies
+
+* Every developer works in the *exact same* environment
+
+## Development strategy
+
+* Build with Docker in mind from the ground up.
+
+* Run your code *only* through Docker.
+
+* Bind your source directory.
+
+* Use watchers.
+
+## Continuous integration
+
+When code is ready, build the image and push it to a Docker repository.
+
+CI should work directly from the repository.
+
+---
+
+# Developing with Docker
+
+## Preparing for the development life cycle
+
+Most services will need to link to other services.
+
+* In development, those other services might be test/development services.
+
+* In test, maybe a mix of live and test services.
+
+* In staging, other live or staging services.
+
+* In live, other live servics.
+
+This means your app should make any links configurable.
+
+## The venerable environment variable saves the day
+
+Docker has a thing for that:
+
+    docker run -e DB_HOST=mydbhost.com my_app
+
+In code:
+
+    database.connect(environment.DB_HOST)
 
 ---
 
@@ -434,7 +502,7 @@ These are in order of difficulty.
 
 ---
 
-# Get coding!
+# Exercise One - Write an API
 
 * Start in the `stub` folder.
 
@@ -634,3 +702,187 @@ Documentation is at <https://docs.docker.com/compose/yml/>.
 * Kill it with `ctrl-d`
 
 * Visit <http://<your EC2 IP>> to see if it worked.
+
+---
+
+# Deploying micro-services
+
+---
+
+# Deploying micro-services
+
+There are lots of ways to deploy micro-services.
+
+At [Proxama](http://www.proxama.com/), we use AWS.
+
+In AWS, there are lots of ways to deploy services ;)
+
+There are also lots of TLAs.
+
+## Option 1 - An AMI of your EC2
+
+Launch an EC2, install Docker, pull your image, configure it to run on startup, create AMI.
+
+Won't scale.
+
+Requires manual fixing when it breaks.
+
+## Option 2 - An AMI in an LC for an ASG behind an ELB
+
+As above with a load balancer and auto-scaling.
+
+Too much manual wiring up.
+
+---
+
+# Interlude
+
+---
+
+# The three virtues of programming
+
+> ## Laziness
+> The quality that makes you go to great effort to reduce overall energy expenditure. It makes you write labor-saving programs that other people will find useful and document what you wrote so you don't have to answer so many questions about it.
+>
+> ## Impatience
+> The anger you feel when the computer is being lazy. This makes you write programs that don't just react to your needs, but actually anticipate them. Or at least pretend to.
+>
+> ## Hubris
+> The quality that makes you write (and maintain) programs that other people won't want to say bad things about.
+
+*Larry Wall, "Programming Perl", 1996*
+
+---
+
+# Deploying micro-services
+
+## Option 3 - Lambda
+
+Lambda is a new service from Amazon.
+
+You deploy a single function and wire it up using other Amazon services (e.g SNS, SQS, RDS, S3)
+
+Too new. (I'm too impatient to wait for it to settle)
+
+Quite limited. (I'm too lazy to rethink my whole architecture)
+
+## Option 4 - EB
+
+The sweet spot at Proxama.
+
+Configure some scaling options.
+
+Configure a Docker image to pull.
+
+Sit back and watch.
+
+---
+
+# Elastic Beanstalk
+
+EB has many options for configuration.
+
+But for Docker, it's fairly straightforward.
+
+It uses a JSON file for configuration: `Dockerrun.aws.json`.
+
+At it's simplest:
+
+    !json
+    {
+        "AWSEBDockerrunVersion": "1",
+        "Image": {
+            "Name": "stilvoid/microservices-workshop-prototype"
+        },
+        "Ports": [
+            {
+                "ContainerPort": "8000"
+            }
+        ]
+    }
+
+## Exercise four - Elastic Beanstalk
+
+Get the prototype application running in EB.
+
+AWS console: <https://console.aws.amazon.com/>
+
+---
+
+# Exercise five - deploying the stack
+
+## Part one - put it all together
+
+* Get in groups which have at least one implementation of each API.
+
+* For each service (room, message, quote):
+
+    * Pick a designated driver
+
+    * Combine all the code
+
+    * Try it out in a browser to make sure it all works
+
+## Part two - deploy it!
+
+* For each service:
+
+    * Build the docker image
+
+    * Push it to docker
+
+    * Deploy as an EB application
+
+* Configure services to speak to eachother
+
+    See `Configuration` -> `Software Configuration` -> `Environment Properties`
+
+---
+
+# Questions?
+
+---
+
+# Further reading
+
+## Micro-services
+
+<https://en.wikipedia.org/wiki/Coupling_%28computer_programming%29>
+
+<http://www.kennybastani.com/2015/05/graph-analysis-microservice-neo4j.html>
+
+## Docker
+
+<https://docs.docker.com/articles/dockerfile_best-practices/>
+
+<https://docs.docker.com/compose/yml/>
+
+## Micro-frameworks
+
+<http://bottlepy.org/docs/dev/index.html>
+
+<http://python-eve.org/>
+
+<https://goji.io/>
+
+<http://expressjs.com/>
+
+## Tools
+
+<https://github.com/stilvoid/please/>
+
+<http://jsonlint.com/>
+
+---
+
+# Thanks for coming!
+
+The slides will be in the repository at <https://github.com/stilvoid/microservices-workshop/>
+
+.qr: 200|https://github.com/stilvoid/microservices-workshop/
+
+I made this presentation with <https://github.com/adamzap/landslide>
+
+# Presenter notes
+
+Don't forget to push the slides branch

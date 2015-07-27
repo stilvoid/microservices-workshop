@@ -1,0 +1,16 @@
+graph {
+    scale=0.5
+
+    node [shape=circle style=filled fillcolor="#99ccbb88"]
+
+    c7 [label="7"]
+    c6 [label="6"]
+    c5 [label="5"]
+    c4 [label="4"]
+    c3 [label="3"]
+    c2 [label="2"]
+    c1 [label="1"]
+
+    edge [style=invis]
+    {c1 c2 c3 c4 c5 c6 c7} -- {c1 c2 c3 c4 c5 c6 c7}
+}
