@@ -224,8 +224,6 @@
         });
 
         function init(user_id) {
-            console.log("LEMON");
-
             current_user = user_id;
 
             $("#login-container").hide();

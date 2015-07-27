@@ -18,5 +18,22 @@ def enable_cors():
 def options(path):
     return "Yeah it's fine mate."
 
-install(MongoPlugin(uri="mongodb://db", db="quotes", json_mongo=True))
+def normalize_object(self, obj):
+    """Normalize mongo object for json serialization."""
+    if isinstance(obj, dict):
+        if "_id" in obj:
+            obj["id"] = str(obj["_id"])
+            del obj["_id"]
+
+        for val in obj.values():
+            self.normalize_object(val)
+    if isinstance(obj, list):
+        for a in obj:
+            self.normalize_object(a)
+
+# Monkey patch pymongo-bottle for our purposes
+MongoPlugin.normalize_object = normalize_object
+
+install(MongoPlugin(uri="mongodb://db", db="message", json_mongo=True))
+
 run(host="0.0.0.0", port=8000, reloader=True, debug=True)

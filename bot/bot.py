@@ -14,6 +14,8 @@ while True:
         response = requests.get("{}/messages".format(os.environ["MESSAGE_API_URL"]))
     except Exception as e:
         print("ERR:", e)
+        sys.stdout.flush()
+
         time.sleep(1)
         continue
 
@@ -28,6 +30,8 @@ while True:
         response = requests.get("{}/messages".format(os.environ["MESSAGE_API_URL"]))
     except Exception as e:
         print("ERR:", e)
+        sys.stdout.flush()
+
         continue
 
     seen_last = False
@@ -45,6 +49,8 @@ while True:
                 quote = requests.get("{}/quote".format(os.environ["QUOTE_API_URL"]))
             except Exception as e:
                 print("ERR:", e)
+                sys.stdout.flush()
+
                 continue
 
             try:
@@ -63,6 +69,8 @@ while True:
                 sys.stdout.flush()
             except Exception as e:
                 print("ERR:", e)
+                sys.stdout.flush()
+
                 continue
 
     last_message = response.json()["messages"][-1]["id"]
