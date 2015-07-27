@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="panel-body">
-                    <form class="form">
+                    <form class="form" id="login-form">
                         <div class="form-group">
                             <label for="login-name">Your name</label>
                             <input class="form-control" type="text" id="login-name" />
@@ -196,14 +196,6 @@
         var current_user = 0;
         var current_room = null;
 
-        get_rooms(function() {
-            $("#rooms a:first-child").click();
-
-            setInterval(function() {
-                get_messages(current_room);
-            }, 1000);
-        });
-
         $("#login-form").submit(function() {
             var name = $("#login-name").val();
 
@@ -213,7 +205,8 @@
                 });
 
                 if(me.length > 0) {
-                    current_user = me[0].id;
+                    init(me[0].id);
+
                     return;
                 }
 
@@ -223,12 +216,28 @@
                     method: "POST",
                     data: JSON.stringify({"name": name})
                 }).then(function(data) {
-                    current_user = data.id;
+                    init(data.id);
                 });
             });
-        }).then(function() {
+
+            return false;
+        });
+
+        function init(user_id) {
+            console.log("LEMON");
+
+            current_user = user_id;
+
             $("#login-container").hide();
             $("#main-container").show();
-        });
+
+            get_rooms(function() {
+                $("#rooms a:first-child").click();
+
+                setInterval(function() {
+                    get_messages(current_room);
+                }, 1000);
+            });
+        }
     </script>
 </html>

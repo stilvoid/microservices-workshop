@@ -2,6 +2,7 @@ from bottle import *
 
 @get("/messages")
 def get_messages(mongodb):
+    return {
         "messages": [
             {
                 "id": "message id 1",

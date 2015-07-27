@@ -24,9 +24,6 @@ while True:
 while True:
     time.sleep(1)
 
-    print("Last seen: {}".format(last_message))
-    sys.stdout.flush()
-
     try:
         response = requests.get("{}/messages".format(os.environ["MESSAGE_API_URL"]))
     except Exception as e:
