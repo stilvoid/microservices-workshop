@@ -78,7 +78,7 @@
                                 </div>
 
                                 <div class="panel-body">
-                                    <div class="list-group" id="members"></div>
+                                    <div class="list-group" id="users"></div>
                                 </div>
                             </div>
                         </div>
@@ -109,18 +109,11 @@
         var rooms = [
             {
                 "name": "General",
-                "title": "Random talk and cat pictures",
-                "users": [19,0,2,4,6,8,10]
+                "title": "Random talk and cat pictures"
             },
             {
-                "name": "Doctors",
-                "title": "Reminiscing over past faces",
-                "users": [19,0,1,2,3,4,5,6,7,8,9,10,11]
-            },
-            {
-                "name": "Companions",
-                "title": "Things we've seen. Things we've done.",
-                "users": [19,12,13,14,15,16,17,18]
+                "name": "New guys",
+                "title": "Things we've seen. Things we've done."
             }
         ];
 
@@ -137,13 +130,6 @@
             "David",
             "Matt",
             "Peter",
-            "Elisabeth",
-            "Louise",
-            "Sophie",
-            "Billie",
-            "Alex",
-            "Karen",
-            "Jenna",
             "QuoteBot"
         ];
 
@@ -154,7 +140,7 @@
                 "text": "Hello there, how's it going?"
             },
             {
-                "user": 12,
+                "user": 8,
                 "room": 0,
                 "text": "Hi William. Not bad thanks."
             },
@@ -174,7 +160,7 @@
                 "text": "It's me!<br/><img src=\"http://media.catmoji.com/post/vro4/doctor-who-cat.jpg\" />"
             },
             {
-                "user": 17,
+                "user": 3,
                 "room": 0,
                 "text": "<em>groan</em>"
             }
@@ -188,12 +174,6 @@
             });
         }
 
-        messages.push({
-            "user": 18,
-            "room": 2,
-            "text": "I wonder what the new guy will be like."
-        });
-
         // Handle form submission
         $("#chat-form").submit(function() {
             post_message($("#message").val());
@@ -206,19 +186,23 @@
         function choose_room(room_id) {
             var room = rooms[room_id];
 
-            $("#members").html("");
+            $("#users").html("");
             $("#chat").html("");
 
             $("#room-name").text(room.name + ": " + room.title);
 
-            get_members(room_id);
+            // Render users
+            users.forEach(function(user) {
+                var link = $("<span>").addClass("list-group-item").text(user);
+                $("#users").append(link);
+            });
+
             get_messages(room_id);
         }
 
         function get_rooms() {
             rooms.forEach(function(room, id) {
                 var link = $("<a>").addClass("list-group-item").text(room.name);
-                link.append($("<span>").addClass("badge").text(room.users.length));
                 $("#rooms").append(link);
                 link.click(function() {
                     current_room = id;
@@ -258,13 +242,6 @@
             }
         }
 
-        function get_members(room_id) {
-            rooms[room_id].users.forEach(function(user_id) {
-                var link = $("<span>").addClass("list-group-item").text(users[user_id]);
-                $("#members").append(link);
-            });
-        }
-
         function post_message(text) {
             var message = {
                 room: current_room,
@@ -279,9 +256,6 @@
         var current_user = 0;
         var current_room = 0;
 
-        get_rooms();
-        $("#rooms a:first-child").click();
-
         $("#login-form").submit(function() {
             var name=$("#login-name").val();
 
@@ -291,6 +265,9 @@
 
             $("#login-container").hide();
             $("#main-container").show();
+
+            get_rooms();
+            $("#rooms a:first-child").click();
 
             return false;
         });

@@ -7,14 +7,12 @@ def get_rooms(mongodb):
             {
                 "id": "room id 1",
                 "name": "room name 1",
-                "title": "room title 1",
-                "members": ["user id 1", "user id 2"]
+                "title": "room title 1"
             },
             {
                 "id": "room id 2",
                 "name": "room name 2",
-                "title": "room title 2",
-                "members": ["user id 2"]
+                "title": "room title 2"
             }
         ]
     }
@@ -24,8 +22,7 @@ def create_room(mongodb):
     return {
         "id": "new room id",
         "name": "new room name",
-        "title": "new room title",
-        "members": ["new user id"]
+        "title": "new room title"
     }
 
 @get("/users")

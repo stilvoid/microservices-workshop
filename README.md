@@ -20,11 +20,7 @@ All other APIs should reply with the content type `application/json`.
     {
         "id": "room id",
         "name": "room name",
-        "title": "room title",
-        "members": [
-            "user id 1",
-            "user id 2"
-        ]
+        "title": "room title"
     }
 
 ### Message
