@@ -2,28 +2,19 @@ from bottle import *
 
 @get("/messages")
 def get_messages(mongodb):
+    if request.query.get("room"):
+        messages = mongodb["messages"].find({
+            "room": request.query.get("room")
+        })
+    else:
+        messages = mongodb["messages"].find()
+
     return {
-        "messages": [
-            {
-                "id": "message id 1",
-                "user": "user id 1",
-                "room": "room id 1",
-                "text": "message text 1"
-            },
-            {
-                "id": "message id 2",
-                "user": "user id 2",
-                "room": "room id 2",
-                "text": "message text 2"
-            }
-        ]
+        "messages": list(messages)
     }
 
 @post("/messages")
 def create_message(mongodb):
-    return {
-        "id": "room id",
-        "user": "user id",
-        "room": "room id",
-        "text": "message text"
-    }
+    new_id = mongodb["messages"].insert(request.json)
+
+    return mongodb["messages"].find_one(new_id)

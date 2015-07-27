@@ -1,0 +1,52 @@
+ui:
+    build: ui
+    volumes:
+        - ui:/usr/src/app
+    ports:
+        - 8000:8000
+    environment:
+        ROOM_API_URL: http://localhost:8001
+        MESSAGE_API_URL: http://localhost:8002
+        QUOTE_API_URL: http://localhost:8003
+
+bot:
+    build: bot
+    volumes:
+        - bot:/usr/src/app
+    links:
+        - message:message
+        - quote:quote
+    environment:
+        MESSAGE_API_URL: http://message:8000
+        QUOTE_API_URL: http://quote:8000
+        USER_ID: 55b6c105f4f94700149ed09b
+
+room:
+    build: room
+    volumes:
+        - room:/usr/src/app
+    ports:
+        - 8001:8000
+    links:
+        - db:db
+
+message:
+    build: message
+    volumes:
+        - message:/usr/src/app
+    ports:
+        - 8002:8000
+    links:
+        - db:db
+
+quote:
+    build: quote
+    volumes:
+        - quote:/usr/src/app
+    ports:
+        - 8003:8000
+    links:
+        - db:db
+
+db:
+    image: mongo

@@ -1,0 +1,6 @@
+server:
+    build: .
+    volumes:
+        - .:/usr/share/nginx/html
+    ports:
+        - 8000:80
