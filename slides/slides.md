@@ -4,7 +4,7 @@ Don't worry if you don't finish; there will be time later.
 
 ## WiFi
 
-Connect to `Kings Centre Free Wifi`.
+Connect to `The Kings Centre Wifi`.
 
 Open a browser and sign up.
 
@@ -16,7 +16,9 @@ OSX and Linux: You've already got one :P
 
 ## Make an account with AWS
 
-<http://aws.amazon.com>
+Take a $50 AWS credit voucher
+
+Sign up at <http://aws.amazon.com>
 
 ## Make an account with Docker hub
 
@@ -75,6 +77,10 @@ Twitter: [@stilvoid](https://twitter.com/stilvoid)
 
 # Introduce yourself
 
+# Presenter notes
+
+OS, python exp, docker exp, AWS exp
+
 ---
 
 # Micro-services - what, why, how?
@@ -103,7 +109,7 @@ Twitter: [@stilvoid](https://twitter.com/stilvoid)
 
 # Presenter notes
 
-UNIX philosophy
+UNIX philosophy - Doug McIlroy
 
 ---
 
@@ -215,7 +221,11 @@ You can always split services apart later
 2. Redeem your voucher
 
 3. Create an EC2
+    * t2.small instance
     * Ubuntu
+    * Assign a public IP
+    * Allocate 100GB of storage
+    * Add a security policy to allow ports 8000-9000
     * Be sure to save your ssh key
     * Take a note of the IP address
 
@@ -237,7 +247,7 @@ You can always split services apart later
 2. Login through your EC2
 
         !bash
-        $ docker login
+        $ sudo docker login
 
 ---
 
@@ -250,32 +260,32 @@ You can always split services apart later
 ## Pull an image from the registry
 
     !bash
-    $ docker pull mongo
+    $ sudo docker pull mongo
 
 ## Run a container
 
     !bash
-    $ docker run -d -P --name db mongo
+    $ sudo docker run -d -P --name db mongo
 
 ## List running containers
 
     !bash
-    $ docker ps
+    $ sudo docker ps
 
 ## See a container's logs
 
     !bash
-    $ docker logs db
+    $ sudo docker logs db
 
 ## Stop a container
 
     !bash
-    $ docker stop db
+    $ sudo docker stop db
 
 ## Remove a container
 
     !bash
-    $ docker rm db
+    $ sudo docker rm db
 
 ---
 
@@ -331,7 +341,7 @@ This means your app should make any links configurable.
 
 Docker has a thing for that:
 
-    docker run -e DB_HOST=mydbhost.com my_app
+    sudo docker run -e DB_HOST=mydbhost.com my_app
 
 In code:
 
@@ -354,16 +364,16 @@ Prototype: <http://code.offend.me.uk/babble-proto>
 ## Check out the base project
 
     !bash
-    $ git clone git@github.com:stilvoid/microservices-workshop.git
+    $ git clone https://github.com/stilvoid/microservices-workshop.git
 
 ## Build and run the prototype yourself
 
     !bash
     $ cd prototype
-    $ docker build -t babble-proto ./
-    $ docker run -ti --rm -p 80:80 babble-proto
+    $ sudo docker build -t babble-proto ./
+    $ sudo docker run -ti --rm -p 8000:80 babble-proto
 
-## Visit <http://<your EC2 IP>> to see it
+## Visit <http://[your EC2 IP]:8000> to see it
 
 ## Presenter notes
 
@@ -526,19 +536,19 @@ These are in order of difficulty.
 
 1. Start a local mongo db (quote API doesn't need this)
 
-        docker run -d --name db mongo
+        sudo docker run -d --name db mongo
 
 2. Build the stub application
 
-        docker build -t stub ./
+        sudo docker build -t stub ./
 
 3. Run it
 
-        docker run --rm --link db:db -v $(pwd):/usr/src/app stub
+        sudo docker run --rm --link db:db -v $(pwd):/usr/src/app stub
 
     or for the quote API:
 
-        docker run --rm -v $(pwd):/usr/src/app stub
+        sudo docker run --rm -v $(pwd):/usr/src/app stub
 
 4. Write code, try it out, repeat
 
@@ -563,21 +573,21 @@ Unit tests out of scope - not a python session
 1. Docker requires you to remember sometimes complex invocations, e.g. ports and volume mounts.
 
         !bash
-        $ docker run -d -p 27017:27017 -v $(pwd):/data mongo
+        $ sudo docker run -d -p 27017:27017 -v $(pwd):/data mongo
 
 2. Defining relationships between containers requires manual wiring up.
 
         !bash
-        $ docker run -d --name db mongo      # Run a mongo db
+        $ sudo docker run -d --name db mongo      # Run a mongo db
 
-        $ docker run -d --link db:db my-app  # Run my app, link it to the db
+        $ sudo docker run -d --link db:db my-app  # Run my app, link it to the db
 
 3. Managing a suite of related containers isn't easy, i.e. you need to remember to mention each container involved.
 
         !bash
-        $ docker stop mongo my-app  # Stop everything
+        $ sudo docker stop mongo my-app  # Stop everything
 
-        $ docker rm mongo my-app    # Remove the containers
+        $ sudo docker rm mongo my-app    # Remove the containers
 
 ---
 
@@ -679,11 +689,19 @@ Write a `docker-compose.yml` file for running your API from exercise one.
 
 If it needs a database, that should be included too.
 
+## Install docker-compose
+ 
+From <http://docs.docker.com/compose/install/>
+
+    !bash
+    $ wget -qO- https://get.docker.com/ | sh
+
+    $ curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
 ## Notes
 
 * Documentation is at <https://docs.docker.com/compose/yml/>.
-
-.qr: 150|https://docs.docker.com/compose/yml/
 
 * Start your service with `docker-compose up`
 
