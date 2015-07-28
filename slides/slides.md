@@ -544,11 +544,11 @@ These are in order of difficulty.
 
 3. Run it
 
-        sudo docker run --rm --link db:db -v $(pwd):/usr/src/app stub
+        sudo docker run --rm -p 8000:8000 --link db:db -v $(pwd):/usr/src/app stub
 
     or for the quote API:
 
-        sudo docker run --rm -v $(pwd):/usr/src/app stub
+        sudo docker run --rm -p 8000:8000 -v $(pwd):/usr/src/app stub
 
 4. Write code, try it out, repeat
 
