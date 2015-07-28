@@ -1,16 +1,26 @@
 # Things to do first
 
+Don't worry if you don't finish; there will be time later.
+
 ## WiFi
 
-    Connect to `Kings Centre Free Wifi`.
+Connect to `Kings Centre Free Wifi`.
 
-    Open a browser and sign up.
+Open a browser and sign up.
 
 ## Install an SSH client
 
-    Windows: PuTTY is good
+Windows: PuTTY is good
 
-    OSX and Linux: You've already got one :P
+OSX and Linux: You've already got one :P
+
+## Make an account with AWS
+
+<http://aws.amazon.com>
+
+## Make an account with Docker hub
+
+<https://hub.docker.com>
 
 ---
 
@@ -880,6 +890,14 @@ AWS console: <https://console.aws.amazon.com/>
 The slides will be in the repository at <https://github.com/stilvoid/microservices-workshop/>
 
 .qr: 200|https://github.com/stilvoid/microservices-workshop/
+
+## Get in touch
+
+Email: <steve@offend.me.uk>
+
+Twitter: [@stilvoid](https://twitter.com/stilvoid)
+
+## Credits
 
 I made this presentation with <https://github.com/adamzap/landslide>
 
